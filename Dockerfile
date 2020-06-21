@@ -2,20 +2,35 @@ FROM jenkins:latest
 
 USER root
 
-RUN cat /etc/apt/sources.list
+RUN cat /etc/debian_version
+RUN uname -r
 
-# RUN echo "deb http://deb.debian.org/debian stretch main" >  /etc/apt/sources.list && \
-#     echo "deb http://security.debian.org stretch/updates main" >> /etc/apt/sources.list
+RUN apt-get update \
+&& apt-get install -y apt-transport-https \
+&& apt-get install -y sudo \
+&& apt-get install -y ca-certificates \
+&& apt-get install -y curl \
+&& apt-get install -y software-properties-common
 
-# RUN curl https://apt.dockerproject.org/gpg > docker.gpg.key && echo "c836dc13577c6f7c133ad1db1a2ee5f41ad742d11e4ac860d8e658b2b39e6ac1 docker.gpg.key" | sha256sum -c && apt-key add docker.gpg.key && rm docker.gpg.key
+RUN curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
 
-RUN echo "deb http://deb.debian.org/debian stretch main" \
-         > /etc/apt/sources.list.d/docker.list \
-         && gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys 28806A878AE423A28372792ED75899B9A724937A \
-         && apt-get update \
-         && apt-get install -y apt-transport-https \
-         && apt-get install -y sudo \
-         && apt-get install -y docker-engine \
-         && rm -rf /var/lib/apt/lists/*
+RUN add-apt-repository \
+   "deb [arch=amd64] https://download.docker.com/linux/debian \
+   $(lsb_release -cs) \
+   stable edge test"
+
+RUN apt-get update \
+&&  apt-get install -y docker-compose \
+&&  apt-get install -y docker-ce \
+&&  apt-get install -y docker-ce-cli
+
+RUN service docker start
+
+# RUN curl -L https://github.com/docker/compose/releases/download/1.16.1/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose \
+# &&  curl -L https://download.docker.com/linux/debian/dists/stretch/pool/stable/amd64/docker-ce_18.09.9~3-0~debian-stretch_amd64.deb -o /usr/local/bin/docker-ce.deb \
+# &&  dpkg -i /usr/local/bin/docker-ce.deb \
+# &&  service docker start
+
+
 RUN echo "jenkins ALL=NOPASSWD: ALL" >> /etc/sudoers
 USER jenkins
