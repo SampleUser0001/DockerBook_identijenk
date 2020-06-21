@@ -24,8 +24,6 @@ RUN apt-get update \
 &&  apt-get install -y docker-ce \
 &&  apt-get install -y docker-ce-cli
 
-RUN service docker start
-
 # RUN curl -L https://github.com/docker/compose/releases/download/1.16.1/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose \
 # &&  curl -L https://download.docker.com/linux/debian/dists/stretch/pool/stable/amd64/docker-ce_18.09.9~3-0~debian-stretch_amd64.deb -o /usr/local/bin/docker-ce.deb \
 # &&  dpkg -i /usr/local/bin/docker-ce.deb \
